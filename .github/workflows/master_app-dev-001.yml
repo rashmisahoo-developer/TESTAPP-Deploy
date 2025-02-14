@@ -27,6 +27,12 @@ jobs:
       - name: Restore NuGet packages
         run: nuget restore
 
+      - name: Inject the code
+        run: |
+          [xml]$doc = Get-Content .\Web.config
+          $doc.configuration.appSettings.add | Where-Object {$_.key -eq "NAME"} | foreach-object { $_.value = "${{vars.NAME}}" }
+          $doc.Save(".\Web.config")
+
       - name: Publish to folder
         run: msbuild /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\"
 
@@ -58,6 +64,7 @@ jobs:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_8A1C386B08654D90884D7A8B902F53CF }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B1B870B58B6047D39E37A663EB85759A }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EFBA903973994E9B9CBC04642FD9DFAB }}
+
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
