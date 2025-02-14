@@ -29,9 +29,9 @@ jobs:
 
       - name: Inject the code
         run: |
-          [xml]$doc = Get-Content .\Web.config
+          [xml]$doc = Get-Content .\TESTAPP\Web.config
           $doc.configuration.appSettings.add | Where-Object {$_.key -eq "NAME"} | foreach-object { $_.value = "${{vars.NAME}}" }
-          $doc.Save(".\Web.config")
+          $doc.Save(".\TESTAPP\Web.config")
 
       - name: Publish to folder
         run: msbuild /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\"
